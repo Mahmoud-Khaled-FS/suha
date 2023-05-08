@@ -13,12 +13,13 @@ import (
 
 // Download file
 func (a *App) DownloadFile() error {
-	downloader := downloader.New(downloader.DownloadCtx{
-		Fource: a.Fource,
-		Name: a.Name,
-		OutDir: a.OutDir,
-		Url: a.Url,
-	})
+	downloader := downloader.Download{
+		Fource:  a.Fource,
+		Name:    a.Name,
+		OutDir:  a.OutDir,
+		Url:     a.Url,
+		Quality: a.Quality,
+	}
 	return downloader.Download()
 	// res, err := http.Get(a.Url.String())
 	// if err != nil || res.StatusCode > 299 {

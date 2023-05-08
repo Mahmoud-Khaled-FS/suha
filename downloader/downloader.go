@@ -15,22 +15,18 @@ import (
 )
 
 type Downloader interface {
-	New(*DownloadCtx, ...interface{}) *Downloader
 	Download() error
 }
 
-type DownloadCtx struct {
-	Fource bool
-	Name string
-	OutDir string
-	Url *url.URL
+type Download struct {
+	Fource  bool
+	Name    string
+	OutDir  string
+	Url     *url.URL
+	Quality string
 }
 
-type GeneralDownloader struct {
-	DownloadCtx
-}
-
-func (d *DownloadCtx) checkName(res *http.Response) {
+func (d *Download) checkName(res *http.Response) {
 	fileEx := ""
 	contentHeader, ok := res.Header["Content-Type"]
 	if ok && len(contentHeader) >= 1 {
@@ -61,10 +57,10 @@ func (d *DownloadCtx) checkName(res *http.Response) {
 	if fileEx != "" && !strings.Contains(fileName, fileEx) {
 		fileName += fileEx
 	}
-	d.Name = fileName	
+	d.Name = fileName
 }
 
-func (a *DownloadCtx) fileNameFromHeader(header http.Header) string {
+func (a *Download) fileNameFromHeader(header http.Header) string {
 	dispositionHeaderssd, ok := header["Content-Disposition"]
 	if !ok || len(dispositionHeaderssd) == 0 {
 		return "download"
@@ -91,8 +87,12 @@ func (a *DownloadCtx) fileNameFromHeader(header http.Header) string {
 	}
 }
 
-func (d *GeneralDownloader) Download() error {
-	res, err := http.Get(d.Url.String())
+func (d *Download) Download() error {
+	url, err := d.getProvider()
+	if err != nil {
+		return err
+	}
+	res, err := http.Get(url)
 	if err != nil || res.StatusCode > 299 {
 		return fmt.Errorf(fmt.Sprintf("ERROR: url '%s' not correct! can not download\n%s", d.Url.String(), err))
 	}
@@ -122,8 +122,14 @@ func (d *GeneralDownloader) Download() error {
 	}
 	return nil
 }
-func New(ctx DownloadCtx) *GeneralDownloader {
-	return &GeneralDownloader{
-		DownloadCtx: ctx,
+
+func (d *Download) getProvider() (string, error) {
+	host := d.Url.Host
+	if strings.Contains(host, "youtube") {
+		return d.StreamYoutubeUrl()
 	}
+	if strings.Contains(host, "pinterest") {
+		return d.GetPintrestUrl()
+	}
+	return d.Url.String(), nil
 }

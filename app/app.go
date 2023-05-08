@@ -35,6 +35,7 @@ type App struct {
 	OutDir  string
 	UrlList []*url.URL
 	Auto    bool
+	Quality string
 }
 
 func New(args []string) *App {
@@ -67,6 +68,12 @@ func (a *App) parseArgs(args []string) {
 				}
 				skipNext = true
 				a.OutDir = args[i+1]
+			case "-q":
+				if len(args) <= i+1 {
+					utils.PanicRed("ERROR: expected quality after -q but got no arg")
+				}
+				skipNext = true
+				a.Quality = args[i+1]
 			case "-f":
 				a.Fource = true
 			case "-w":
@@ -117,5 +124,3 @@ func getwd() string {
 	}
 	return dir
 }
-
-

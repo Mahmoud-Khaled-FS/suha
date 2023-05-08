@@ -6,6 +6,10 @@ run: build
 
 test: build
 	suha https://wallpaperaccess.com/full/682452.jpg
+test_youtube: build
+	suha https://www.youtube.com/watch?v=nQ2A30cD3Q8 -q 1080p
+test_pin: build
+	suha https://www.pinterest.com/pin/858850591472418081/ -f -o pinterest_test
 
 test_name: build
 	suha https://i.pinimg.com/564x/75/ca/84/75ca84ce0204fe7d51ff8d333d857adc.jpg
