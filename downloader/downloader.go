@@ -19,11 +19,12 @@ type Downloader interface {
 }
 
 type Download struct {
-	Fource  bool
-	Name    string
-	OutDir  string
-	Url     *url.URL
-	Quality string
+	Fource    bool
+	Name      string
+	OutDir    string
+	Url       *url.URL
+	Quality   string
+	AudioOnly bool
 }
 
 func (d *Download) checkName(res *http.Response) {
@@ -57,7 +58,7 @@ func (d *Download) checkName(res *http.Response) {
 	if fileEx != "" && !strings.Contains(fileName, fileEx) {
 		fileName += fileEx
 	}
-	d.Name = fileName
+	d.Name = utils.SanitizeFileName(fileName)
 }
 
 func (a *Download) fileNameFromHeader(header http.Header) string {
@@ -94,19 +95,20 @@ func (d *Download) Download() error {
 	}
 	res, err := http.Get(url)
 	if err != nil || res.StatusCode > 299 {
-		return fmt.Errorf(fmt.Sprintf("ERROR: url '%s' not correct! can not download\n%s", d.Url.String(), err))
+		return fmt.Errorf("ERROR: url '%s' not correct! can not download\n%s", d.Url.String(), err)
 	}
 	defer res.Body.Close()
 	d.checkName(res)
 	path := filepath.Join(d.OutDir, d.Name)
+	fmt.Println(path)
 	// Check if file exsits
 	if !d.Fource && utils.IsFileExist(path) {
-		return fmt.Errorf(fmt.Sprintf("ERROR: File '%s' already exist", path))
+		return fmt.Errorf("ERROR: File '%s' already exist", path)
 	}
 	utils.CreateDir(d.OutDir)
 	file, err := os.Create(path)
 	if err != nil {
-		return fmt.Errorf(fmt.Sprintf("ERROR: Can not create file with name '%s'\n%s", d.Name, err))
+		return fmt.Errorf("ERROR: Can not create file with name '%s'\n%s", d.Name, err)
 	}
 	defer file.Close()
 	pr := utils.NewProgress(res.Header)
@@ -118,7 +120,7 @@ func (d *Download) Download() error {
 	if err != nil {
 		file.Close()
 		os.Remove(path)
-		return fmt.Errorf(fmt.Sprintf("ERROR: Failed to download file %s\n%s", d.Name, err))
+		return fmt.Errorf("ERROR: Failed to download file %s\n%s", d.Name, err)
 	}
 	return nil
 }

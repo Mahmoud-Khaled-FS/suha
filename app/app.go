@@ -28,14 +28,15 @@ func (m Mode) String() string {
 }
 
 type App struct {
-	Url     *url.URL
-	Fource  bool
-	Name    string
-	Mode    Mode
-	OutDir  string
-	UrlList []*url.URL
-	Auto    bool
-	Quality string
+	Url       *url.URL
+	Fource    bool
+	Name      string
+	Mode      Mode
+	OutDir    string
+	UrlList   []*url.URL
+	Auto      bool
+	Quality   string
+	AudioOnly bool
 }
 
 func New(args []string) *App {
@@ -80,6 +81,9 @@ func (a *App) parseArgs(args []string) {
 				a.Mode = WATCH
 			case "-a":
 				a.Auto = true
+			case "--audio-only":
+			case "--mp3":
+				a.AudioOnly = true
 			}
 		} else {
 			fileUrl, err := url.ParseRequestURI(arg)

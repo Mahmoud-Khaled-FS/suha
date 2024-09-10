@@ -14,42 +14,14 @@ import (
 // Download file
 func (a *App) DownloadFile() error {
 	downloader := downloader.Download{
-		Fource:  a.Fource,
-		Name:    a.Name,
-		OutDir:  a.OutDir,
-		Url:     a.Url,
-		Quality: a.Quality,
+		Fource:    a.Fource,
+		Name:      a.Name,
+		OutDir:    a.OutDir,
+		Url:       a.Url,
+		Quality:   a.Quality,
+		AudioOnly: a.AudioOnly,
 	}
 	return downloader.Download()
-	// res, err := http.Get(a.Url.String())
-	// if err != nil || res.StatusCode > 299 {
-	// 	return fmt.Errorf(fmt.Sprintf("ERROR: url '%s' not correct! can not download\n%s", a.Url.String(), err))
-	// }
-	// defer res.Body.Close()
-	// a.checkName(res)
-	// path := filepath.Join(a.OutDir, a.Name)
-	// // Check if file exsits
-	// if !a.Fource && utils.IsFileExist(path) {
-	// 	return fmt.Errorf(fmt.Sprintf("ERROR: File '%s' already exist", path))
-	// }
-	// utils.CreateDir(a.OutDir)
-	// file, err := os.Create(path)
-	// if err != nil {
-	// 	return fmt.Errorf(fmt.Sprintf("ERROR: Can not create file with name '%s'\n%s", a.Name, err))
-	// }
-	// defer file.Close()
-	// pr := utils.NewProgress(res.Header)
-	// if pr == nil {
-	// 	_, err = io.Copy(file, res.Body)
-	// } else {
-	// 	_, err = io.Copy(file, io.TeeReader(res.Body, pr))
-	// }
-	// if err != nil {
-	// 	file.Close()
-	// 	os.Remove(path)
-	// 	return fmt.Errorf(fmt.Sprintf("ERROR: Failed to download file %s\n%s", a.Name, err))
-	// }
-	// return nil
 }
 
 // Check the nam of file from header first then form url
